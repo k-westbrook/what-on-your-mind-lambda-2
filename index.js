@@ -4,17 +4,14 @@ const docClient = new AWS.DynamoDB.DocumentClient({ region: "us-west-1" });
 exports.handler = (event, context, callback) => {
 
   const params = {
-    TableName: 'COMMENTS',
-    KeyConditionExpression: "#comment= :comment",
-    ExpressionAttributeNames: {
-      "#comment": "comment"
-    },
-
+    TableName: 'COMMENT',
+    Select: "ALL_ATTRIBUTES"
   };
 
-  docClient.query(params, function (err, data) {
+  docClient.scan(params, function (err, data) {
 
-    let recordReturned = data.Items[0];
+
+    let recordsReturned = data.Items;
 
     if (err) {
 
@@ -25,7 +22,7 @@ exports.handler = (event, context, callback) => {
           'Access-Control-Allow-Credentials': true,
         },
         body: {
-          message: JSON.stringify('ERROR, comment not found.')
+          message: JSON.stringify('ERROR, comments not found.')
         }
       };
       callback(null, data);
@@ -41,7 +38,7 @@ exports.handler = (event, context, callback) => {
         body: {
 
           message: JSON.stringify('Successful get.'),
-          event: recordReturned
+          comments: recordsReturned
         }
 
       };
